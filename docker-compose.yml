@@ -1,0 +1,34 @@
+services:
+  backend:
+    container_name: contact_surister_backend
+    image: surister/django-meinheld-gunicorn:python3.9.6-alpine3.14
+    restart: unless-stopped
+    networks:
+      - proxy
+    ports:
+      - 80
+    volumes:
+      - ./backend/:/app/
+
+    environment:
+      - MODULE_NAME=backend.wsgi
+      - VIRTUAL_HOST=api.surister.dev
+
+  frontend:
+    container_name: contact_surister_frontend
+    image: nginx
+    restart: unless-stopped
+    networks:
+      - proxy
+    ports:
+      - 80
+    environment:
+      - VIRTUAL_HOST=contact.surister.dev
+      - NGINX_HOST=contact.surister.dev
+    volumes:
+      - ./frontend/dist/:/usr/share/nginx/html
+
+networks:
+  proxy:
+    name: proxy
+    external: true
